@@ -5,8 +5,16 @@ from tkinter import *
 BACKGROUND_COLOR = "#B1DDC6"
 
 # Read csv file and convert to dictionary
-data = pandas.read_csv('data/french_words.csv')
-to_learn = data.to_dict(orient='records')
+# data = pandas.read_csv('data/french_words.csv')
+# to_learn = data.to_dict(orient='records')
+
+try:
+    data = pandas.read_csv('words_to_learn.csv')
+except FileNotFoundError:
+    data = pandas.read_csv('data/french_words.csv')
+    to_learn = data.to_dict(orient='records')
+else:
+    to_learn = data.to_dict(orient='records')
 
 def next_card():
     # Globalize variables
@@ -33,6 +41,13 @@ def flip_card():
     canvas.itemconfigure(card_title, text='English', fill='white')
     canvas.itemconfigure(card_word, text=english_word, fill='white')
 
+def word_known():
+    if current_card in to_learn:
+        to_learn.remove(current_card)
+        new_data = pandas.DataFrame(to_learn)
+        new_data.to_csv("words_to_learn.csv", index=False)
+    next_card()
+
 
 # Setup tkinter window
 window = Tk()
@@ -56,13 +71,16 @@ card_word = canvas.create_text(400, 263, text="", font=('Ariel', 60, 'bold'))
 canvas.grid(column=0, row=0, columnspan=2)
 
 # Buttons
-know_button = Button(image=check_image, highlightthickness=0, command=next_card)
+know_button = Button(image=check_image, highlightthickness=0, command=word_known)
 know_button.grid(column=1, row=1)
 unknown_button = Button(image=cross_image, highlightthickness=0, command=next_card)
 unknown_button.grid(column=0, row=1)
 
 # Get data after window and widgets loaded
 next_card()
+
+
+
 
 
 
