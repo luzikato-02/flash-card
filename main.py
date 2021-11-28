@@ -4,17 +4,18 @@ from tkinter import *
 
 BACKGROUND_COLOR = "#B1DDC6"
 
-# Read csv file and convert to dictionary
-# data = pandas.read_csv('data/french_words.csv')
-# to_learn = data.to_dict(orient='records')
-
 try:
+    # Try reading CSV file
     data = pandas.read_csv('words_to_learn.csv')
 except FileNotFoundError:
+    # If file has not been made then use original CSV
     data = pandas.read_csv('data/french_words.csv')
+    # Convert data to dictionary
     to_learn = data.to_dict(orient='records')
 else:
+    # If 'words_to_learn' exist then convert it to dictionary
     to_learn = data.to_dict(orient='records')
+
 
 def next_card():
     # Globalize variables
@@ -32,8 +33,9 @@ def next_card():
     # Redefine timer with 3s delay and run 'flip_card' function
     flip_timer = window.after(3000, flip_card)
 
+
 def flip_card():
-    # Get english word from global variabel
+    # Get english word from global variable
     english_word = current_card['English']
     # Change background image
     canvas.itemconfig(card_background, image=back_img)
@@ -41,11 +43,14 @@ def flip_card():
     canvas.itemconfigure(card_title, text='English', fill='white')
     canvas.itemconfigure(card_word, text=english_word, fill='white')
 
+
 def word_known():
-    if current_card in to_learn:
-        to_learn.remove(current_card)
-        new_data = pandas.DataFrame(to_learn)
-        new_data.to_csv("words_to_learn.csv", index=False)
+    # Remove known words from dictionary
+    to_learn.remove(current_card)
+    # Convert dictionary to a pandas dataframe with updated 'to_learn'
+    new_data = pandas.DataFrame(to_learn)
+    new_data.to_csv("data/words_to_learn.csv", index=False)
+    # Switch to next word
     next_card()
 
 
@@ -79,24 +84,5 @@ unknown_button.grid(column=0, row=1)
 # Get data after window and widgets loaded
 next_card()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Tkinter screen loop
 window.mainloop()
